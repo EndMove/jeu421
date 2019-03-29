@@ -1,4 +1,5 @@
 #  jeu421-nihajer.py
+# -*- coding: utf-8 -*-
 #  Powered By EndMove
 #  Copyright 2019 Jérémi_NIHART_-_classe5tc
 
@@ -15,13 +16,14 @@ noms = ["Agathe Zeublouse", "Alain Provist", "Alex Cité",
         "Justin Ptipeu", "Kelly Diote", "Karl Amelmou",
         "Marie Vière", "Médhi Khaman", "Pat Redway",
         "Sarah Pelpu", "Tarek Tifié", "Teddy Nainportekoi"]
-        
-#('win' ou 'lin' ou 'auto' -> pour détecter automatiquement le système)
+
+# ('win' ou 'lin' ou 'auto' -> pour détecter automatiquement le système)
 system = "auto"
-#Nombre de boots en partie normal
+# Nombre de boots en partie normal
 nbr_boot = 10
 
-#ENDCOL powered by endmove.eu
+
+# ENDCOL powered by endmove.eu
 class endcol:
     BLACK = '\033[30m'
     RED = '\033[31m'
@@ -32,18 +34,18 @@ class endcol:
     CYAN = '\033[36m'
     WHITE = '\033[37m'
     RESET = '\033[0;39m'
-    
 
-#ENDCLEAR powered by endmove.eu
+
+# ENDCLEAR powered by endmove.eu
 def endclear():
     if system == "auto":
-        os.system('cls' if os.name=='nt' else 'clear')
+        os.system('cls' if os.name == 'nt' else 'clear')
     elif system == "win":
         os.system("cls")
     elif system == "lin":
         os.system("clear")
-        
-        
+
+
 def de(face: int):
     if face >= 4 and face <= 20:
         if face != 10:
@@ -75,11 +77,11 @@ def lancerD6(nb: int, repet: bool = False):
                     for i in check:
                         if i == aleat:
                             utilise = True
-                    if utilise == False:
+                    if not utilise:
                         check.append(aleat)
         return tuple(check)
-            
-    
+
+
 def reassort(combi: tuple):
     ls_combi = list(combi)
     liste = []
@@ -87,10 +89,10 @@ def reassort(combi: tuple):
         liste.append(max(ls_combi))
         ls_combi.remove(max(ls_combi))
     return tuple(liste)
-    
-    
+
+
 def reserver_des(lances: tuple):
-    dico = {4:0, 2:0, 1:0}
+    dico = {4: 0, 2: 0, 1: 0}
     if 4 in lances:
         cnt = lances.count(4)
         dico[4] = dico[4] + cnt
@@ -101,8 +103,8 @@ def reserver_des(lances: tuple):
         cnt = lances.count(1)
         dico[1] = dico[1] + cnt
     return dico
-    
-    
+
+
 def relancer_des(des_ok: dict):
     liste = []
     if des_ok[4] != 0:
@@ -119,22 +121,22 @@ def relancer_des(des_ok: dict):
         liste.append(1)
     else:
         jet = de(6)
-        liste.append(jet)   
+        liste.append(jet)
     return tuple(liste)
-    
+
 
 def jeu421(nbjoueurs: int):
     ls_player = []
     for i in range(0, nbjoueurs):
         chance = 2
-        des = lancerD6(3, True)
+        des = reassort(lancerD6(3, True))
         for y in range(0, chance):
             dico = reserver_des(des)
-            lancer = relancer_des(dico)
+            lancer = reassort(relancer_des(dico))
         ls_player.append(lancer)
     return ls_player
-    
-    
+
+
 def high_score(joueurs: list):
     if joueurs.count((4, 2, 1)) > 0:
         y = 2
@@ -158,11 +160,12 @@ def high_score(joueurs: list):
             joueurs.remove(max(joueurs))
         y += 1
 
+
 if __name__ == '__main__':
     start = True
     while start:
-        print(endcol.GREEN,end="")
-    #NOTE: Sous win un bug d'affichage des couleurs survient ici.
+        print(endcol.GREEN, end="")
+# NOTE: Sous win un bug d'affichage des couleurs survient ici.
         print("""
           =====================================
                Welcome to the game of 421
@@ -179,38 +182,39 @@ if __name__ == '__main__':
     if c == 1:
         nbr = int(input("How much boot do you want?: "))
         endclear()
-        print(endcol.BLUE,end="")
-        print("Here is the final result:",endcol.YELLOW)
+        print(endcol.BLUE, end="")
+        print("Here is the final result:", endcol.YELLOW)
         liste = jeu421(nbr)
         high_score(liste)
         print(endcol.RESET)
-        input() #Pour bloquer l'arret sous win
+        input()  # Pour bloquer l'arret sous win
     elif c == 2:
         chances = 2
         use_chances = True
         endclear()
-        print("It's up to you to play, your first throw is: ",end="")
+        print("It's up to you to play, your first throw is: ", end="")
         lancer = lancerD6(3, True)
         print(reassort(lancer))
         while use_chances:
             if chances == 0:
                 use_chances = False
             else:
-                relance = input("Do you want to roll the missing dice? (O/n): ")
+                msg = "Do you want to roll the missing dice? (Y/n): "
+                relance = input(msg)
                 endclear()
-                if relance == "o" or relance == "n" or relance == "":
+                if relance == "y" or relance == "n" or relance == "":
                     if relance == "n":
                         use_chances = False
                     else:
                         dico = reserver_des(lancer)
-                        lancer = relancer_des(dico)
+                        lancer = reassort(relancer_des(dico))
                         chances -= 1
                         print("Your new throw is: {}".format(lancer))
         liste = jeu421(nbr_boot)
         liste.append(lancer)
         endclear()
-        print(endcol.BLUE,end="")
-        print("You throw is: {}".format(lancer),endcol.YELLOW)
+        print(endcol.BLUE, end="")
+        print("You throw is: {}".format(lancer), endcol.YELLOW)
         high_score(liste)
         print(endcol.RESET)
-        input() #Pour bloquer l'arret sous win
+        input()  # Pour bloquer l'arret sous win
